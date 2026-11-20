@@ -1,0 +1,2792 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NEXOR Platform – Slide Thuyết Trình Đồ Án</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-deep: #060913;
+      --bg-surface: #0c1224;
+      --card-bg: rgba(16, 24, 48, 0.72);
+      --card-hover: rgba(22, 34, 68, 0.88);
+      --line: rgba(56, 75, 133, 0.35);
+      --line-bright: rgba(0, 242, 254, 0.4);
+
+      --text-main: #f1f5f9;
+      --text-sub: #94a3b8;
+      --text-muted: #64748b;
+
+      --cyan: #00f2fe;
+      --blue: #4facfe;
+      --purple: #8b5cf6;
+      --violet: #a855f7;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+
+      --grad-primary: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #8b5cf6 100%);
+      --grad-ai: linear-gradient(135deg, #a855f7 0%, #6366f1 50%, #00f2fe 100%);
+      --grad-success: linear-gradient(135deg, #10b981 0%, #00f2fe 100%);
+      --grad-card: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+
+      --shadow-glow: 0 0 25px rgba(0, 242, 254, 0.18);
+      --shadow-purple: 0 0 30px rgba(139, 92, 246, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      background: var(--bg-deep);
+      overflow: hidden;
+      font-family: "Plus Jakarta Sans", "Be Vietnam Pro", system-ui, sans-serif;
+      color: var(--text-main);
+      user-select: none;
+    }
+
+    /* ================= AMBIENT CANVAS & BACKGROUND ================= */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.65;
+    }
+
+    .ambient-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      z-index: 0;
+      animation: floatOrb 18s ease-in-out infinite alternate;
+    }
+
+    .orb-1 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(0, 242, 254, 0.16) 0%, transparent 70%);
+      top: -100px;
+      left: -100px;
+    }
+
+    .orb-2 {
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.18) 0%, transparent 70%);
+      bottom: -150px;
+      right: -150px;
+      animation-duration: 22s;
+      animation-direction: alternate-reverse;
+    }
+
+    .orb-3 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+      top: 40%;
+      left: 60%;
+      animation-duration: 15s;
+    }
+
+    @keyframes floatOrb {
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      50% {
+        transform: translate(60px, 40px) scale(1.08);
+      }
+
+      100% {
+        transform: translate(-40px, 80px) scale(0.95);
+      }
+    }
+
+    /* ================= SÂN KHẤU 16:9 ================= */
+    #stage {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 1280px;
+      height: 720px;
+      transform-origin: center;
+      background: var(--bg-surface);
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8), 0 0 0 1px var(--line);
+      z-index: 10;
+    }
+
+    #stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ================= SLIDE TRANSITIONS ================= */
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 44px 64px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: scale(0.96) translateY(20px);
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 2;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: scale(1) translateY(0);
+    }
+
+    .slide.active .anim {
+      animation: slideFadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .slide.active .delay-1 {
+      animation-delay: 0.06s;
+    }
+
+    .slide.active .delay-2 {
+      animation-delay: 0.12s;
+    }
+
+    .slide.active .delay-3 {
+      animation-delay: 0.18s;
+    }
+
+    .slide.active .delay-4 {
+      animation-delay: 0.24s;
+    }
+
+    .slide.active .delay-5 {
+      animation-delay: 0.30s;
+    }
+
+    @keyframes slideFadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ================= TYPOGRAPHY & HEADINGS ================= */
+    h1 {
+      font-size: 62px;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    h2 {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .grad {
+      background: var(--grad-primary);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: inline-block;
+    }
+
+    .grad-ai {
+      background: var(--grad-ai);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .grad-green {
+      background: var(--grad-success);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .sub {
+      color: var(--text-sub);
+      font-size: 17px;
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+
+    /* ================= LAYOUT HELPERS ================= */
+    .body {
+      flex: 1;
+      display: flex;
+      gap: 18px;
+      min-height: 0;
+    }
+
+    .col {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .item {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* ================= MODERN GLASS CARDS ================= */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px 22px;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    }
+
+    .card:hover {
+      border-color: var(--line-bright);
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45), var(--shadow-glow);
+    }
+
+    /* ================= KHUNG HÌNH ẢNH CAO CẤP (.shot) ================= */
+    .shot {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: radial-gradient(circle at 50% 50%, rgba(15, 23, 45, 0.95), rgba(7, 10, 22, 0.98));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.6), 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .shot:hover {
+      border-color: var(--cyan);
+      box-shadow: inset 0 0 20px rgba(0, 242, 254, 0.12), 0 12px 30px rgba(0, 242, 254, 0.25);
+    }
+
+    /* Ảnh hiển thị vừa vặn trọn vẹn 100% trong khung, không bị tràn hay phóng đại */
+    .shot img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain !important;
+      object-position: center !important;
+      padding: 8px;
+      box-sizing: border-box;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      background: transparent;
+      border-radius: 10px;
+    }
+
+    .shot:hover img {
+      transform: scale(1.02);
+    }
+
+    .shot .zoom-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: rgba(6, 9, 19, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      opacity: 0;
+      transform: scale(0.85);
+      transition: all 0.2s ease;
+      z-index: 5;
+    }
+
+    .shot:hover .zoom-btn {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Placeholder khi chưa có ảnh */
+    .shot-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px;
+      z-index: 2;
+    }
+
+    .shot-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid rgba(0, 242, 254, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: var(--cyan);
+    }
+
+    .shot-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .shot-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: "JetBrains Mono", monospace;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px dashed var(--line);
+    }
+
+    .cap {
+      margin-top: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .cap span {
+      display: block;
+      color: var(--text-sub);
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    /* Chips công nghệ */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: rgba(26, 38, 74, 0.6);
+      border: 1px solid rgba(56, 75, 133, 0.5);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-main);
+      margin: 0 5px 6px 0;
+      transition: all 0.2s ease;
+    }
+
+    .chip:hover {
+      background: rgba(34, 50, 96, 0.8);
+      border-color: var(--cyan);
+    }
+
+    .chip.hl {
+      background: var(--grad-primary);
+      border: none;
+      font-weight: 700;
+      color: #060913;
+      box-shadow: 0 4px 12px rgba(0, 242, 254, 0.3);
+    }
+
+    /* ================= AGENDA / TỔNG QUAN NỘI DUNG ================= */
+    .agenda-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-column-gap: 52px;
+      grid-row-gap: 24px;
+      flex: 1;
+      align-content: center;
+    }
+
+    .agenda-item {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 4px 0 8px;
+      transition: all 0.25s ease;
+    }
+
+    .agenda-item:hover {
+      transform: translateY(-2px);
+    }
+
+    .agenda-num {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 0.12em;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      transition: all 0.25s ease;
+    }
+
+    .agenda-item:hover .agenda-num {
+      border-bottom-color: var(--cyan);
+      color: #fff;
+      box-shadow: 0 1px 0 var(--cyan);
+    }
+
+    .agenda-title {
+      font-size: 21px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-top: 3px;
+      letter-spacing: -0.01em;
+    }
+
+    .agenda-desc {
+      font-size: 14px;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+
+    /* ================= MỤC 1: VẤN ĐỀ & GIẢI PHÁP ================= */
+    .pair-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .problem-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 16px 20px;
+      border-left: 4px solid var(--rose);
+    }
+
+    .problem-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .problem-header .ic {
+      font-size: 26px;
+      padding: 8px;
+      border-radius: 10px;
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.25);
+    }
+
+    .problem-header b {
+      font-size: 17px;
+      font-weight: 700;
+      color: #ffcad4;
+    }
+
+    .problem-arrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 600;
+    }
+
+    .problem-arrow::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+
+    .solution-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .solution-box .check-ic {
+      color: var(--emerald);
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .solution-box em {
+      font-style: normal;
+      color: #a7f3d0;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    /* Danh sách gạch đầu dòng */
+    .list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .list li {
+      font-size: 16px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      line-height: 1.5;
+      color: var(--text-main);
+    }
+
+    .list li::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+      flex: none;
+      margin-top: 8px;
+    }
+
+    /* ================= TRANG BÌA ================= */
+    .cover-layout {
+      justify-content: center;
+      align-items: flex-start;
+      position: relative;
+    }
+
+    .cover-hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 16px;
+      border-radius: 999px;
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid rgba(0, 242, 254, 0.35);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+
+    .cover-meta {
+      margin-top: 32px;
+      display: flex;
+      gap: 20px;
+    }
+
+    .meta-box {
+      padding: 14px 20px;
+      border-radius: 12px;
+      background: rgba(16, 24, 48, 0.75);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+    }
+
+    .meta-box small {
+      display: block;
+      color: var(--text-muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 4px;
+    }
+
+    .meta-box b {
+      font-size: 17px;
+      color: var(--text-main);
+    }
+
+    /* ================= KIẾN TRÚC KỸ THUẬT ================= */
+    .arch-diagram {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 8px 0 20px;
+    }
+
+    .arch-node {
+      flex: 1;
+      text-align: center;
+      padding: 16px 8px;
+      border-radius: 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      font-weight: 700;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .arch-node:hover {
+      border-color: var(--cyan);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 242, 254, 0.2);
+    }
+
+    .arch-node small {
+      display: block;
+      color: var(--text-sub);
+      font-weight: 400;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .arch-node.ai {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(99, 102, 241, 0.4));
+      border: 1px solid var(--violet);
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.25);
+    }
+
+    .arch-arrow {
+      color: var(--cyan);
+      font-size: 20px;
+      font-weight: 800;
+      text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+    }
+
+    .stack-section {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .stack-group {
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: rgba(12, 18, 36, 0.6);
+      border: 1px solid var(--line);
+    }
+
+    .stack-group h4 {
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ================= ĐỘI NGŨ THÀNH VIÊN ================= */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      flex: 1;
+    }
+
+    .member-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 18px 12px;
+      gap: 8px;
+    }
+
+    .member-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid var(--cyan);
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.25);
+      background: #0b1126;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+    }
+
+    .member-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .member-avatar:hover img {
+      transform: scale(1.06);
+    }
+
+    .member-fallback {
+      font-size: 38px;
+      color: var(--text-sub);
+    }
+
+    .member-name {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-top: 2px;
+    }
+
+    .member-role {
+      color: var(--cyan);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      background: rgba(0, 242, 254, 0.1);
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 242, 254, 0.25);
+    }
+
+    .member-branch {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      color: var(--purple);
+      background: rgba(139, 92, 246, 0.12);
+      padding: 2px 7px;
+      border-radius: 6px;
+      border: 1px solid rgba(139, 92, 246, 0.25);
+    }
+
+    .member-tasks {
+      color: var(--text-sub);
+      font-size: 12px;
+      line-height: 1.45;
+      margin-top: 2px;
+    }
+
+    /* ================= SPRINTS ================= */
+    .sprints-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      flex: 1;
+    }
+
+    .sprint-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 22px 20px;
+      border-top: 4px solid var(--cyan);
+    }
+
+    .sprint-card:nth-child(2) {
+      border-top-color: var(--purple);
+    }
+
+    .sprint-card:nth-child(3) {
+      border-top-color: var(--emerald);
+    }
+
+    .sprint-badge {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sprint-n {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .sprint-date {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    .sprint-stat {
+      font-size: 70px;
+      font-weight: 900;
+      line-height: 1;
+      margin: 10px 0 4px;
+    }
+
+    .sprint-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .sprint-theme {
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--text-sub);
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+    }
+
+    /* ================= TRANG KẾT THÚC ================= */
+    .cover-end {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .kpi-circle {
+      font-size: 100px;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 6px;
+      letter-spacing: -0.04em;
+    }
+
+    .links-grid {
+      display: flex;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .link-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 22px;
+      border-radius: 999px;
+      background: rgba(16, 24, 48, 0.9);
+      border: 1px solid var(--line);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-main);
+      text-decoration: none;
+      transition: all 0.25s ease;
+    }
+
+    .link-pill:hover {
+      border-color: var(--cyan);
+      background: rgba(22, 34, 68, 1);
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+      transform: translateY(-2px);
+    }
+
+    /* ================= CONTROLS & FLOATING UI ================= */
+    #bar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 4px;
+      background: var(--grad-primary);
+      width: 0%;
+      z-index: 100;
+      box-shadow: 0 0 12px var(--cyan);
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #ui-bar {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%) translateY(14px);
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      z-index: 100;
+      background: rgba(8, 14, 28, 0.88);
+      border: 1px solid rgba(0, 242, 254, 0.25);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 5px 12px;
+      border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 18px rgba(0, 242, 254, 0.12);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #ui-bar.visible,
+    #ui-bar:hover {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .ui-divider {
+      width: 1px;
+      height: 18px;
+      background: rgba(255, 255, 255, 0.16);
+      margin: 0 4px;
+    }
+
+    .ui-btn {
+      background: transparent;
+      color: var(--text-main);
+      border: none;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      line-height: 1;
+    }
+
+    .ui-btn:hover {
+      background: rgba(0, 242, 254, 0.15);
+      color: var(--cyan);
+      box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+    }
+
+    #count {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 13px;
+      color: var(--cyan);
+      min-width: 60px;
+      text-align: center;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 0 4px;
+    }
+
+    #timer {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 13px;
+      color: var(--emerald);
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      cursor: pointer;
+    }
+
+    /* ================= SLIDE OVERVIEW (GRID MODAL) ================= */
+    #overview-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 9, 19, 0.94);
+      backdrop-filter: blur(20px);
+      z-index: 200;
+      display: none;
+      flex-direction: column;
+      padding: 40px;
+      overflow-y: auto;
+    }
+
+    #overview-modal.open {
+      display: flex;
+    }
+
+    .overview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .overview-thumb {
+      background: var(--bg-surface);
+      border: 2px solid var(--line);
+      border-radius: 10px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .overview-thumb:hover,
+    .overview-thumb.current {
+      border-color: var(--cyan);
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+      transform: translateY(-3px);
+    }
+
+    .overview-thumb-num {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      color: var(--cyan);
+      font-weight: 700;
+    }
+
+    .overview-thumb-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* ================= LIGHTBOX ZOOM CHO ẢNH ================= */
+    #lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 6, 14, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+      user-select: none;
+    }
+
+    #lightbox.open {
+      display: flex;
+    }
+
+    .lb-content {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      max-width: 92vw;
+      max-height: 90vh;
+      cursor: default;
+    }
+
+    #lightbox-img {
+      max-width: 90vw;
+      max-height: 80vh;
+      object-fit: contain;
+      border-radius: 12px;
+      border: 1px solid var(--line-bright);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85), 0 0 45px rgba(0, 242, 254, 0.25);
+      animation: lbZoomIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes lbZoomIn {
+      from {
+        opacity: 0;
+        transform: scale(0.92);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    #lightbox-caption {
+      margin-top: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(16, 24, 48, 0.95);
+      padding: 8px 20px;
+      border-radius: 999px;
+      border: 1px solid var(--line-bright);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+      color: var(--text-main);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .lb-step-pill {
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--grad-primary);
+      color: #060913;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+    }
+
+    .lb-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+      padding-left: 8px;
+      border-left: 1px solid var(--line);
+    }
+
+    .lb-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(16, 24, 48, 0.85);
+      border: 1px solid var(--line-bright);
+      color: var(--cyan);
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      z-index: 310;
+      backdrop-filter: blur(10px);
+    }
+
+    .lb-nav:hover {
+      background: rgba(0, 242, 254, 0.2);
+      border-color: var(--cyan);
+      transform: translateY(-50%) scale(1.1);
+      box-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
+    }
+
+    .lb-prev {
+      left: 24px;
+    }
+
+    .lb-next {
+      right: 24px;
+    }
+
+    .lb-close {
+      position: absolute;
+      top: 22px;
+      right: 26px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(16, 24, 48, 0.85);
+      border: 1px solid var(--line);
+      color: var(--text-sub);
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      z-index: 310;
+    }
+
+    .lb-close:hover {
+      background: rgba(244, 63, 94, 0.2);
+      border-color: var(--rose);
+      color: var(--rose);
+      transform: scale(1.1);
+    }
+
+    /* ================= MEMBER SPOTLIGHT MODAL ================= */
+    #lb-member-mode {
+      display: none;
+    }
+
+    .lb-member-card {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      background: rgba(11, 16, 32, 0.96);
+      border: 1px solid var(--line-bright);
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.9), 0 0 45px rgba(0, 242, 254, 0.25);
+      border-radius: 20px;
+      padding: 32px 38px;
+      max-width: 820px;
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      animation: lbZoomIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .lb-member-avatar-wrap {
+      width: 220px;
+      height: 260px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid var(--cyan);
+      box-shadow: 0 0 30px rgba(0, 242, 254, 0.35);
+      flex-shrink: 0;
+      background: #060913;
+    }
+
+    #lb-member-avatar {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .lb-member-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .lb-member-branch {
+      display: inline-block;
+      align-self: flex-start;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: #c084fc;
+      background: rgba(139, 92, 246, 0.16);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      padding: 3px 12px;
+      border-radius: 6px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .lb-member-name {
+      font-size: 32px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+
+    .lb-member-role {
+      display: inline-block;
+      align-self: flex-start;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--cyan);
+      background: rgba(0, 242, 254, 0.12);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      padding: 4px 14px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+    }
+
+    .lb-member-tasks-title {
+      font-size: 12.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .lb-member-tasks {
+      font-size: 15px;
+      color: #e2e8f0;
+      line-height: 1.6;
+      background: rgba(6, 9, 19, 0.6);
+      border: 1px solid var(--line);
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-weight: 500;
+    }
+
+    /* In-slide member card focus */
+    .member-card.dimmed {
+      opacity: 0.32 !important;
+      transform: scale(0.96) !important;
+      transition: all 0.3s ease;
+    }
+
+    .member-card.focused {
+      opacity: 1 !important;
+      transform: scale(1.06) translateY(-8px) !important;
+      border-color: var(--cyan) !important;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 35px rgba(0, 242, 254, 0.45) !important;
+      z-index: 20 !important;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* ================= HELP MODAL (Phím tắt) ================= */
+    #help-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 9, 19, 0.88);
+      backdrop-filter: blur(15px);
+      z-index: 250;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #help-modal.open {
+      display: flex;
+    }
+
+    .help-card {
+      width: 480px;
+      background: var(--bg-surface);
+      border: 1px solid var(--line-bright);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    }
+
+    .help-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .kbd {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 13px;
+      color: var(--cyan);
+    }
+
+    @media print {
+
+      html,
+      body {
+        overflow: visible;
+        height: auto;
+        background: #060913 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      #stage {
+        position: static;
+        transform: none !important;
+        width: 100%;
+        height: auto;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .slide {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        page-break-after: always;
+      }
+
+      #ui-bar,
+      #bar,
+      #bg-canvas,
+      .ambient-orb {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Background Ambient Lighting & Particles -->
+  <div class="ambient-orb orb-1"></div>
+  <div class="ambient-orb orb-2"></div>
+  <div class="ambient-orb orb-3"></div>
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Top Glowing Progress Bar -->
+  <div id="bar"></div>
+
+  <!-- STAGE 16:9 -->
+  <div id="stage">
+
+    <!-- ==================== 0. BÌA ĐỀ TÀI ==================== -->
+    <section class="slide cover-layout active" data-title="Bìa Đồ Án">
+      <div class="anim delay-1" style="display: flex; align-items: center; gap: 18px; margin-bottom: 20px;">
+        <img src="images/logo.png" alt="NEXOR Logo"
+          style="width: 58px; height: 58px; border-radius: 14px; box-shadow: 0 0 25px rgba(0, 242, 254, 0.4); border: 1px solid rgba(0, 242, 254, 0.35); background: #060913;">
+        <div class="cover-hero-tag" style="margin-bottom: 0;">
+          <span>⚡</span> Báo Cáo Đồ Án Phát Triển Dự Án Phần Mềm
+        </div>
+      </div>
+      <h1 class="anim delay-2">
+        <span class="grad">NEXOR</span> Platform
+      </h1>
+      <p class="sub anim delay-3"
+        style="font-size: 25px; margin-top: 10px; margin-bottom: 0; max-width: 900px; color: #cbd5e1;">
+        Nền tảng thương mại điện tử thiết bị công nghệ thông minh<br>
+        <span class="grad-ai" style="font-weight: 700;">tích hợp trợ lý AI đa phương thức (Gemini &amp; Spring
+          AI)</span>
+      </p>
+
+      <div class="cover-meta anim delay-4"
+        style="margin-top: 26px; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px;">
+        <div class="meta-box" style="padding: 14px 18px;">
+          <small
+            style="color: var(--cyan); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px;">
+            <span>👥</span> Sinh Viên Thực Hiện (Nhóm 03)
+          </small>
+          <div
+            style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; margin-top: 8px; font-size: 14.5px; font-weight: 600; color: #f1f5f9;">
+            <div><b style="color: #fff;">Nguyễn Trí Thắng</b> <span
+                style="font-size: 11px; color: var(--cyan); background: rgba(0,242,254,0.12); padding: 1px 6px; border-radius: 4px; font-weight: 700;">Leader</span>
+            </div>
+            <div><b style="color: #fff;">Nguyễn Tuấn Minh</b> <span
+                style="font-size: 11px; color: var(--purple); background: rgba(139,92,246,0.12); padding: 1px 6px; border-radius: 4px; font-weight: 700;">Backend</span>
+            </div>
+            <div><b style="color: #fff;">Phạm Quốc Lộc</b> <span
+                style="font-size: 11px; color: var(--emerald); background: rgba(16,185,129,0.12); padding: 1px 6px; border-radius: 4px; font-weight: 700;">Frontend</span>
+            </div>
+            <div><b style="color: #fff;">Nguyễn Quốc Hưng</b> <span
+                style="font-size: 11px; color: #f59e0b; background: rgba(245,158,11,0.12); padding: 1px 6px; border-radius: 4px; font-weight: 700;">Frontend/Test</span>
+            </div>
+          </div>
+        </div>
+        <div class="meta-box"
+          style="padding: 14px 18px; display: flex; flex-direction: column; justify-content: center;">
+          <small
+            style="color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;">Giảng
+            viên hướng dẫn</small>
+          <b style="color: var(--cyan); font-size: 17px; margin-top: 4px;">ThS. Bùi Thanh Hải</b>
+          <span style="font-size: 12px; color: var(--text-sub); margin-top: 2px;">Khoa Công Nghệ Thông Tin</span>
+        </div>
+        <div class="meta-box"
+          style="padding: 14px 18px; display: flex; flex-direction: column; justify-content: center;">
+          <small
+            style="color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;">Hệ
+            thống Production</small>
+          <b style="color: var(--emerald); font-size: 17px; margin-top: 4px;">nexortech.io.vn</b>
+          <span style="font-size: 12px; color: var(--text-sub); margin-top: 2px;">Cloud VPS · Nginx SSL</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 0. ĐỘI NGŨ THỰC HIỆN ==================== -->
+    <section class="slide" data-title="Đội Ngũ Thực Hiện" data-zoom-steps="true">
+      <h2 class="anim delay-1">
+        Nhóm 03 – Giới Thiệu &amp; Phân Chia Trách Nhiệm
+      </h2>
+      <p class="sub anim delay-2">4 thành viên phối hợp chặt chẽ theo mô hình Agile/Scrum qua 4 nhánh Git chuyên biệt
+      </p>
+
+      <div class="team-grid anim delay-3">
+        <!-- Thắng -->
+        <div class="card member-card" onclick="zoomMember(this)" style="cursor:pointer">
+          <div class="member-avatar">
+            <img src="images/thang.jpg" alt="Thắng" style="object-position: center 25%;"
+              onerror="handleAvatarError(this, '👨‍💻')">
+          </div>
+          <b class="member-name">Nguyễn Trí Thắng</b>
+          <span class="member-role">Leader · DevOps · AI</span>
+          <span class="member-branch">Devops-Trithang</span>
+          <div class="member-tasks">
+            Docker hóa · CI/CD Actions<br>
+            Cloud VPS · Nginx SSL<br>
+            AI Chatbot &amp; Visual Search
+          </div>
+        </div>
+
+        <!-- Minh -->
+        <div class="card member-card" onclick="zoomMember(this)" style="cursor:pointer">
+          <div class="member-avatar">
+            <img src="images/minh.jpg" alt="Minh" style="object-position: 45% 25%;"
+              onerror="handleAvatarError(this, '👨‍💼')">
+          </div>
+          <b class="member-name">Nguyễn Tuấn Minh</b>
+          <span class="member-role">Backend Lead · Data</span>
+          <span class="member-branch">BE-TuanMinh</span>
+          <div class="member-tasks">
+            Thiết kế ERD · MySQL 8<br>
+            Spring Security &amp; JWT<br>
+            API Sản phẩm &amp; Đặt hàng
+          </div>
+        </div>
+
+        <!-- Lộc -->
+        <div class="card member-card" onclick="zoomMember(this)" style="cursor:pointer">
+          <div class="member-avatar">
+            <img src="images/loc.jpg" alt="Lộc" style="object-position: 50% 20%;"
+              onerror="handleAvatarError(this, '🎨')">
+          </div>
+          <b class="member-name">Phạm Quốc Lộc</b>
+          <span class="member-role">Frontend Lead · UI/UX</span>
+          <span class="member-branch">Frontend-QuocLoc</span>
+          <div class="member-tasks">
+            Storefront B2C · Responsive<br>
+            Bản đồ Store Leaflet<br>
+            Tích hợp Widget Chatbot
+          </div>
+        </div>
+
+        <!-- Hưng -->
+        <div class="card member-card" onclick="zoomMember(this)" style="cursor:pointer">
+          <div class="member-avatar">
+            <img src="images/hung.jpg" alt="Hưng" style="object-position: 36% 22%;"
+              onerror="handleAvatarError(this, '🛠️')">
+          </div>
+          <b class="member-name">Nguyễn Quốc Hưng</b>
+          <span class="member-role">Frontend · Test Lead</span>
+          <span class="member-branch">Frontend-QuocHung</span>
+          <div class="member-tasks">
+            Admin Portal Dashboard<br>
+            Vòng quay may mắn<br>
+            Kiểm thử Smoke &amp; E2E
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 0. TỔNG QUAN NỘI DUNG (AGENDA) ==================== -->
+    <section class="slide" data-title="Tổng Quan Nội Dung">
+      <h2 class="anim delay-1" style="font-size: 38px; margin-bottom: 6px;">
+        <span class="grad">Tổng quan nội dung trình bày</span>
+      </h2>
+      <p class="sub anim delay-2" style="font-size: 17px; margin-bottom: 24px; color: #94a3b8;">
+        Khung trình bày ngắn gọn để hội đồng dễ theo dõi – từ đặt vấn đề đến demo và Q&amp;A.
+      </p>
+
+      <div class="agenda-grid anim delay-3">
+        <!-- 01 -->
+        <div class="agenda-item">
+          <div class="agenda-num">01</div>
+          <div class="agenda-title">1. Đặt vấn đề &amp; Mục tiêu</div>
+          <div class="agenda-desc">Vì sao chọn đề tài, mục tiêu chính của hệ thống.</div>
+        </div>
+
+        <!-- 02 -->
+        <div class="agenda-item">
+          <div class="agenda-num">02</div>
+          <div class="agenda-title">2. Phân tích &amp; Chức năng</div>
+          <div class="agenda-desc">Đối tượng, luồng nghiệp vụ, use-cases hệ thống.</div>
+        </div>
+
+        <!-- 03 -->
+        <div class="agenda-item">
+          <div class="agenda-num">03</div>
+          <div class="agenda-title">3. Kiến trúc &amp; Công nghệ</div>
+          <div class="agenda-desc">Mô hình hệ thống, Tech Stack, triển khai.</div>
+        </div>
+
+        <!-- 04 -->
+        <div class="agenda-item">
+          <div class="agenda-num">04</div>
+          <div class="agenda-title">4. CSDL (ERD)</div>
+          <div class="agenda-desc">Cấu trúc bảng, quan hệ, tối ưu truy vấn.</div>
+        </div>
+
+        <!-- 05 -->
+        <div class="agenda-item">
+          <div class="agenda-num">05</div>
+          <div class="agenda-title">5. Chức năng nổi bật &amp; Kết quả</div>
+          <div class="agenda-desc">Tính năng bảo mật, realtime, thanh toán, test kết quả.</div>
+        </div>
+
+        <!-- 06 -->
+        <div class="agenda-item">
+          <div class="agenda-num">06</div>
+          <div class="agenda-title">6. Demo &amp; Q&amp;A</div>
+          <div class="agenda-desc">Trải nghiệm hệ thống trực tiếp và giải đáp.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 1. ĐẶT VẤN ĐỀ & MỤC TIÊU ==================== -->
+    <section class="slide" data-title="1. Đặt Vấn Đề & Mục Tiêu">
+      <h2 class="anim delay-1">
+        <span class="grad">1. Đặt Vấn Đề &amp; Mục Tiêu</span>
+      </h2>
+      <p class="sub anim delay-2">Khảo sát rào cản thực tế trong thương mại điện tử công nghệ và mục tiêu xây dựng hệ
+        thống NEXOR</p>
+
+      <div class="pair-grid anim delay-3">
+        <div class="card problem-card">
+          <div class="problem-header">
+            <span class="ic">🧩</span>
+            <div>
+              <b>Thông số kỹ thuật phức tạp</b>
+              <p style="font-size: 13px; color: var(--text-sub); margin-top: 2px;">Khách hàng khó tự đối chiếu chip,
+                RAM, card đồ họa</p>
+            </div>
+          </div>
+          <div class="problem-arrow">Giải pháp Nexor</div>
+          <div class="solution-box">
+            <span class="check-ic">✓</span>
+            <em>Trợ lý AI Chatbot RAG 24/7 (tư vấn &amp; so sánh tức thì)</em>
+          </div>
+        </div>
+
+        <div class="card problem-card">
+          <div class="problem-header">
+            <span class="ic">📸</span>
+            <div>
+              <b>Tìm kiếm từ khóa hạn chế</b>
+              <p style="font-size: 13px; color: var(--text-sub); margin-top: 2px;">Người dùng chỉ có ảnh mẫu, không biết
+                tên thiết bị</p>
+            </div>
+          </div>
+          <div class="problem-arrow">Giải pháp Nexor</div>
+          <div class="solution-box">
+            <span class="check-ic">✓</span>
+            <em>Visual Search – Tìm sản phẩm qua ảnh bằng Gemini Vision</em>
+          </div>
+        </div>
+
+        <div class="card problem-card">
+          <div class="problem-header">
+            <span class="ic">⚙️</span>
+            <div>
+              <b>Vận hành thủ công quá tải</b>
+              <p style="font-size: 13px; color: var(--text-sub); margin-top: 2px;">Viết bài SEO sản phẩm lâu, đối soát
+                hóa đơn chậm</p>
+            </div>
+          </div>
+          <div class="problem-arrow">Giải pháp Nexor</div>
+          <div class="solution-box">
+            <span class="check-ic">✓</span>
+            <em>AI tự sinh nội dung SEO · Xuất hóa đơn Excel/PDF chuẩn</em>
+          </div>
+        </div>
+
+        <div class="card problem-card">
+          <div class="problem-header">
+            <span class="ic">📦</span>
+            <div>
+              <b>Rủi ro bán vượt tồn kho (Overselling)</b>
+              <p style="font-size: 13px; color: var(--text-sub); margin-top: 2px;">Xung đột dữ liệu Flash Sale nhiều
+                người mua cùng giây</p>
+            </div>
+          </div>
+          <div class="problem-arrow">Giải pháp Nexor</div>
+          <div class="solution-box">
+            <span class="check-ic">✓</span>
+            <em>Giao dịch Transactional cô lập, kiểm tra tồn kho theo thời gian thực</em>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 2. PHÂN TÍCH & CHỨC NĂNG (ĐỐI TƯỢNG) ==================== -->
+    <section class="slide" data-title="2. Phân Tích & Chức Năng (Đối Tượng)" data-zoom-steps="true">
+      <h2 class="anim delay-1">
+        <span class="grad">2. Phân Tích &amp; Chức Năng</span> – Đối Tượng Sử Dụng
+      </h2>
+      <p class="sub anim delay-2">Thiết kế phân tầng trải nghiệm cho người mua (Storefront) và đội ngũ vận hành (Admin
+        Portal)</p>
+
+      <div class="body anim delay-3">
+        <div class="item">
+          <figure class="shot" data-label="Giao diện Khách hàng (Storefront)" onclick="zoomImage(this)">
+            <div class="zoom-btn">🔍</div>
+            <img src="images/khach-hang.png" alt="Khách hàng"
+              onerror="handleImgError(this, '🛍️', 'Giao diện Khách Hàng (Storefront)', 'images/khach-hang.png')">
+          </figure>
+          <div class="cap">
+            🛍 Khách Hàng (B2C Storefront)
+            <span>Tìm kiếm thông minh · Hỏi đáp AI · Đặt hàng đa cấu hình · Định vị Showroom</span>
+          </div>
+        </div>
+
+        <div class="item">
+          <figure class="shot" data-label="Giao diện Quản trị viên (Admin Portal)" onclick="zoomImage(this)">
+            <div class="zoom-btn">🔍</div>
+            <img src="images/admin.png" alt="Quản trị viên"
+              onerror="handleImgError(this, '🛠️', 'Admin Portal Dashboard', 'images/admin.png')">
+          </figure>
+          <div class="cap">
+            🛠 Quản Trị Viên (Admin Portal)
+            <span>Giám sát doanh thu thời gian thực · Quản lý tồn kho &amp; đơn hàng · AI SEO · Xuất báo cáo</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 2. PHÂN TÍCH & CHỨC NĂNG (LUỒNG NGHIỆP VỤ) ==================== -->
+    <section class="slide" data-title="2. Phân Tích & Chức Năng (Nghiệp Vụ)">
+      <h2 class="anim delay-1">
+        <span class="grad">2. Phân Tích &amp; Chức Năng</span> – Luồng Nghiệp Vụ &amp; Use-cases
+      </h2>
+      <p class="sub anim delay-2">Hành trình mua hàng khép kín từ khám phá sản phẩm đến thanh toán và cập nhật trạng
+        thái đơn hàng</p>
+
+      <div class="body anim delay-3">
+        <div class="card" style="flex: 1.1;">
+          <h4
+            style="color: var(--cyan); margin-bottom: 12px; font-size: 15px; letter-spacing: 0.12em; display: flex; align-items: center; gap: 8px;">
+            <span>🛍️</span> USE-CASES KHÁCH HÀNG
+          </h4>
+          <ul class="list">
+            <li><b>Khám phá:</b> Tìm kiếm text, tìm kiếm qua ảnh AI Vision, lọc cấu hình</li>
+            <li><b>Tư vấn:</b> Trợ lý AI giải đáp thông số, so sánh cấu hình theo ngân sách</li>
+            <li><b>Đặt hàng:</b> Chọn biến thể (Màu/RAM/SSD), áp Voucher, thanh toán COD / SePay</li>
+            <li><b>Hậu mãi:</b> Theo dõi đơn hàng theo thời gian thực, quay thưởng may mắn</li>
+          </ul>
+        </div>
+
+        <div class="card" style="flex: 1.1;">
+          <h4
+            style="color: var(--cyan); margin-bottom: 12px; font-size: 15px; letter-spacing: 0.12em; display: flex; align-items: center; gap: 8px;">
+            <span>🛠️</span> USE-CASES QUẢN TRỊ VIÊN
+          </h4>
+          <ul class="list">
+            <li><b>Quản lý bán hàng:</b> Xử lý đơn (Duyệt, đóng gói, giao), xuất hóa đơn PDF</li>
+            <li><b>Quản lý kho &amp; NCC:</b> Nhập hàng, cảnh báo tồn kho an toàn, tránh bán vượt</li>
+            <li><b>Nội dung &amp; Marketing:</b> AI tự sinh bài viết SEO, cấu hình Flash Sale</li>
+            <li><b>Báo cáo kinh doanh:</b> Dashboard biểu đồ doanh thu Recharts, xuất file Excel</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 3. KIẾN TRÚC & CÔNG NGHỆ (TECH STACK) ==================== -->
+    <section class="slide" data-title="3. Kiến Trúc & Công Nghệ (Tech Stack)">
+      <h2 class="anim delay-1">
+        <span class="grad">3. Kiến Trúc &amp; Công Nghệ</span> – Mô Hình Hệ Thống &amp; Tech Stack
+      </h2>
+      <p class="sub anim delay-2">Mô hình phân tầng Client - Reverse Proxy - Backend REST API - Database - Dịch vụ
+        Gemini AI</p>
+
+      <div class="arch-diagram anim delay-3">
+        <div class="arch-node">
+          React 19
+          <small>Vite 6 · SPA Client</small>
+        </div>
+        <span class="arch-arrow">⟶</span>
+        <div class="arch-node">
+          Nginx
+          <small>Reverse Proxy · SSL</small>
+        </div>
+        <span class="arch-arrow">⟶</span>
+        <div class="arch-node" style="border-color: var(--emerald);">
+          Spring Boot 3.4
+          <small>Java 21 · REST API</small>
+        </div>
+        <span class="arch-arrow">⟶</span>
+        <div class="arch-node">
+          MySQL 8.0
+          <small>Database</small>
+        </div>
+        <span class="arch-arrow" style="color: var(--violet);">+</span>
+        <div class="arch-node ai">
+          Gemini 2.5
+          <small>Spring AI Service</small>
+        </div>
+      </div>
+
+      <div class="stack-section anim delay-4">
+        <div class="stack-group">
+          <h4><span>💻</span> FRONTEND STACK</h4>
+          <span class="chip hl">React 19</span>
+          <span class="chip">TypeScript</span>
+          <span class="chip">Tailwind v4</span>
+          <span class="chip">Zustand</span>
+          <span class="chip">Recharts</span>
+          <span class="chip">Leaflet</span>
+        </div>
+
+        <div class="stack-group">
+          <h4><span>⚙️</span> BACKEND STACK</h4>
+          <span class="chip hl">Spring Boot</span>
+          <span class="chip">Java 21</span>
+          <span class="chip">Spring AI</span>
+          <span class="chip">Spring Security</span>
+          <span class="chip">Apache POI</span>
+          <span class="chip">PDFBox</span>
+        </div>
+
+        <div class="stack-group">
+          <h4><span>🚀</span> DEVOPS &amp; CLOUD</h4>
+          <span class="chip hl">Docker Compose</span>
+          <span class="chip">GitHub Actions</span>
+          <span class="chip">GHCR</span>
+          <span class="chip">Ubuntu VPS</span>
+          <span class="chip">Let's Encrypt</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 3. KIẾN TRÚC & CÔNG NGHỆ (TRIỂN KHAI CI/CD) ==================== -->
+    <section class="slide" data-title="3. Kiến Trúc & Công Nghệ (CI/CD)">
+      <h2 class="anim delay-1">
+        <span class="grad">3. Kiến Trúc &amp; Công Nghệ</span> – Quy Trình Triển Khai CI/CD
+      </h2>
+      <p class="sub anim delay-2">Kiểm soát chất lượng mã nguồn tự động qua GitHub Actions và triển khai Cloud VPS an
+        toàn</p>
+
+      <div class="body anim delay-3">
+        <div class="card" style="flex: 1.1;">
+          <h4
+            style="color: var(--cyan); margin-bottom: 12px; font-size: 15px; letter-spacing: 0.12em; display: flex; align-items: center; gap: 8px;">
+            <span>🌿</span> TIÊU CHUẨN GIT FLOW
+          </h4>
+          <ul class="list">
+            <li><b>main</b> – Nhánh phát hành ổn định (Production tại nexortech.io.vn)</li>
+            <li><b>dev</b> – Nhánh tích hợp liên tục tự động chạy CI Pipeline</li>
+            <li><b>4 Feature branches</b> – Độc lập theo từng thành viên (Devops-Trithang, BE-TuanMinh,
+              Frontend-QuocLoc, Frontend-QuocHung)</li>
+            <li>Pull Request bắt buộc <b>1 Peer-Review</b> và vượt qua test tự động mới được merge</li>
+          </ul>
+        </div>
+
+        <div class="card" style="flex: 1.1;">
+          <h4
+            style="color: var(--cyan); margin-bottom: 12px; font-size: 15px; letter-spacing: 0.12em; display: flex; align-items: center; gap: 8px;">
+            <span>🚀</span> PIPELINE GITHUB ACTIONS CI/CD
+          </h4>
+          <ul class="list">
+            <li><b>Test tự động:</b> Gradle test (JDK 21) &amp; npm test (Node 20) song song</li>
+            <li><b>Containerize:</b> Đóng gói Docker đa dịch vụ, quét lỗi bảo mật</li>
+            <li><b>Registry:</b> Tự động đẩy Docker Image lên GitHub Container Registry (GHCR)</li>
+            <li><b>Zero-downtime Deploy:</b> SSH Deploy tự động lên Cloud VPS Ubuntu</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 4. CSDL (ERD) ==================== -->
+    <section class="slide" data-title="4. CSDL (ERD)" data-zoom-steps="true">
+      <h2 class="anim delay-1">
+        <span class="grad">4. CSDL (ERD)</span> – Sơ Đồ Thực Thể &amp; Tối Ưu Truy Vấn
+      </h2>
+      <p class="sub anim delay-2">Thiết kế chuẩn hóa CSDL quan hệ MySQL 8.0, cấu trúc biến thể đa tầng và toàn vẹn dữ
+        liệu</p>
+
+      <div class="body anim delay-3">
+        <!-- Cột trái: Sơ đồ ERD thực tế -->
+        <div class="item" style="flex: 1.35; min-width: 0;">
+          <figure class="shot" data-label="Sơ đồ quan hệ thực thể ERD (20+ bảng quan hệ)" onclick="zoomImage(this)">
+            <div class="zoom-btn">🔍</div>
+            <img src="images/erd.png" alt="Sơ đồ ERD"
+              onerror="handleImgError(this, '🗄️', 'Sơ đồ thực thể ERD', 'images/erd.png')">
+          </figure>
+          <div class="cap">
+            🗄️ Sơ Đồ Thực Thể ERD (20+ Tables)
+            <span>Chuẩn hóa quan hệ B2C Storefront, Biến thể SKU, RAG Vector &amp; Đơn hàng</span>
+          </div>
+        </div>
+
+        <!-- Cột phải: Chiến lược tối ưu hóa hệ thống -->
+        <div class="col" style="flex: 1.25; min-width: 0;">
+          <div class="card"
+            style="padding: 16px 18px; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+            <div
+              style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid var(--line); padding-bottom: 6px;">
+              <h4
+                style="color: var(--cyan); font-size: 14.5px; letter-spacing: 0.08em; display: flex; align-items: center; gap: 8px; margin: 0;">
+                <span>⚡</span> CHIẾN LƯỢC TỐI ƯU HÓA HỆ THỐNG
+              </h4>
+              <span style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">MySQL 8.0 ·
+                Caffeine</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px; flex: 1; justify-content: space-around;">
+              <div
+                style="background: rgba(12, 18, 36, 0.65); border: 1px solid var(--line); border-left: 3px solid var(--cyan); border-radius: 8px; padding: 8px 11px; font-size: 12.5px; line-height: 1.45; color: #cbd5e1;">
+                <b style="color: #fff; display: block; margin-bottom: 2px;">1. Tăng tốc độ tìm kiếm dữ liệu:</b>
+                Tối ưu cách sắp xếp và đánh chỉ mục dữ liệu để hệ thống tìm kiếm sản phẩm, danh mục và trạng thái đơn
+                hàng nhanh hơn.
+              </div>
+
+              <div
+                style="background: rgba(12, 18, 36, 0.65); border: 1px solid var(--line); border-left: 3px solid var(--amber); border-radius: 8px; padding: 8px 11px; font-size: 12.5px; line-height: 1.45; color: #cbd5e1;">
+                <b style="color: #fff; display: block; margin-bottom: 2px;">2. Tránh xung đột khi mua hàng:</b>
+                Xử lý các giao dịch đồng thời một cách an toàn, đặc biệt trong các đợt Flash Sale, nhằm hạn chế tình
+                trạng nhiều người mua cùng một sản phẩm vượt quá số lượng tồn kho.
+              </div>
+
+              <div
+                style="background: rgba(12, 18, 36, 0.65); border: 1px solid var(--line); border-left: 3px solid var(--emerald); border-radius: 8px; padding: 8px 11px; font-size: 12.5px; line-height: 1.45; color: #cbd5e1;">
+                <b style="color: #fff; display: block; margin-bottom: 2px;">3. Đảm bảo tính toàn vẹn dữ liệu:</b>
+                Thiết lập các mối liên kết giữa những bảng dữ liệu hợp lý. Khi xóa dữ liệu, hệ thống sử dụng cơ chế xóa
+                mềm để vẫn lưu giữ thông tin trong cơ sở dữ liệu thay vì xóa hoàn toàn.
+              </div>
+
+              <div
+                style="background: rgba(12, 18, 36, 0.65); border: 1px solid var(--line); border-left: 3px solid var(--purple); border-radius: 8px; padding: 8px 11px; font-size: 12.5px; line-height: 1.45; color: #cbd5e1;">
+                <b style="color: #fff; display: block; margin-bottom: 2px;">4. Tối ưu bộ nhớ đệm:</b>
+                Sử dụng Caffeine Cache để lưu tạm những dữ liệu thường xuyên được truy cập, chẳng hạn như danh mục sản
+                phẩm và cấu hình AI, giúp giảm số lần truy vấn trực tiếp xuống cơ sở dữ liệu.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 5. CHỨC NĂNG NỔI BẬT (AI) ==================== -->
+    <section class="slide" data-title="5. Chức Năng Nổi Bật (AI)" data-zoom-steps="true">
+      <h2 class="anim delay-1">
+        <span class="grad">5. Chức Năng Nổi Bật</span> – Trí Tuệ Nhân Tạo (Gemini AI)
+      </h2>
+      <p class="sub anim delay-2">Ứng dụng AI đa phương thức: tư vấn thông minh 24/7, tìm kiếm bằng hình ảnh và linh vật
+        tương tác</p>
+
+      <div class="body anim delay-3">
+        <div class="item">
+          <figure class="shot" data-label="AI Chatbot tư vấn" onclick="zoomImage(this)">
+            <div class="zoom-btn">🔍</div>
+            <img src="images/chatbot.png" alt="Chatbot"
+              onerror="handleImgError(this, '💬', 'AI Tư Vấn Cấu Hình', 'images/chatbot.png')">
+          </figure>
+          <div class="cap">
+            💬 AI Chatbot Tư Vấn 24/7
+            <span>Hiểu ngữ cảnh giỏ hàng, so sánh thông số chip/RAM, gợi ý theo tầm giá</span>
+          </div>
+        </div>
+
+        <div class="item">
+          <figure class="shot" data-label="Tìm kiếm bằng hình ảnh (NEXOR AI Vision) – Quy trình 2 giai đoạn"
+            onclick="zoomImage(this)">
+            <div class="zoom-btn">🔍</div>
+            <img src="images/visual-search.png" alt="Visual Search"
+              onerror="handleImgError(this, '📷', 'Gemini Vision Search', 'images/visual-search.png')">
+          </figure>
+          <div class="cap">
+            📷 Visual Search (NEXOR AI Vision)
+            <span>Quy trình 2 giai đoạn: Nhận diện thiết bị qua ảnh chụp và so khớp kho hàng</span>
+          </div>
+        </div>
+
+        <div class="item">
+          <figure class="shot" data-label="Pet Mascot tương tác" onclick="zoomImage(this)">
+            <div class="zoom-btn">🔍</div>
+            <img src="images/mascot.png" alt="Pet Mascot"
+              onerror="handleImgError(this, '🦊', 'Pet Mascot Tương Tác', 'images/mascot.png')">
+          </figure>
+          <div class="cap">
+            🐾 Pet Mascot Thông Minh
+            <span>Linh vật tương tác theo hành vi chuột, tạo cảm xúc mua hàng sinh động</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 5. CHỨC NĂNG NỔI BẬT (STOREFRONT MUA SẮM) ==================== -->
+    <section class="slide" data-title="5. Chức Năng Nổi Bật (Storefront)" data-zoom-steps="true">
+      <h2 class="anim delay-1">
+        <span class="grad">5. Chức Năng Nổi Bật</span> – Trải Nghiệm Mua Sắm (Storefront)
+      </h2>
+      <p class="sub anim delay-2">Từ khám phá Flash Sale, bộ lọc đa chiều đến tùy chọn biến thể và giỏ hàng COD</p>
+
+      <div class="body anim delay-3">
+        <div class="item">
+          <figure class="shot" data-label="Trang chủ & Flash Sale" onclick="zoomImage(this)">
+            <div class="zoom-btn">🔍</div>
+            <img src="images/trang-chu.png" alt="Trang chủ"
+              onerror="handleImgError(this, '⚡', 'Trang chủ · Flash Sale', 'images/trang-chu.png')">
+          </figure>
+          <div class="cap">⚡ Flash Sale<span>Đếm ngược giờ vàng thời gian thực</span></div>
+        </div>
+        <div class="item">
+          <figure class="shot" data-label="Bộ lọc đa chiều" onclick="zoomImage(this)">
+            <div class="zoom-btn">🔍</div>
+            <img src="images/bo-loc.png" alt="Bộ lọc"
+              onerror="handleImgError(this, '🎛️', 'Bộ lọc sản phẩm đa tiêu chí', 'images/bo-loc.png')">
+          </figure>
+          <div class="cap">🎛 Bộ Lọc Đa Chiều<span>Lọc theo Hãng, Phân khúc giá, Cấu hình</span></div>
+        </div>
+        <div class="item">
+          <figure class="shot" data-label="Chi tiết sản phẩm" onclick="zoomImage(this)">
+            <div class="zoom-btn">🔍</div>
+            <img src="images/chi-tiet.png" alt="Chi tiết"
+              onerror="handleImgError(this, '🧬', 'Chi tiết cấu hình đa biến thể', 'images/chi-tiet.png')">
+          </figure>
+          <div class="cap">🧬 Đa Biến Thể<span>Tùy biến Màu · RAM · SSD tức thì</span></div>
+        </div>
+        <div class="item">
+          <figure class="shot" data-label="Giỏ hàng & Checkout COD" onclick="zoomImage(this)">
+            <div class="zoom-btn">🔍</div>
+            <img src="images/gio-hang.png" alt="Giỏ hàng"
+              onerror="handleImgError(this, '🛒', 'Giỏ hàng & Checkout COD', 'images/gio-hang.png')">
+          </figure>
+          <div class="cap">🛒 Giỏ Hàng &amp; COD<span>Áp Voucher, trừ tồn kho an toàn</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 5. CHỨC NĂNG NỔI BẬT (GAMIFICATION & ADMIN) ==================== -->
+    <section class="slide" data-title="5. Chức Năng Nổi Bật (Gamification & Admin)" data-zoom-steps="true">
+      <h2 class="anim delay-1">
+        <span class="grad">5. Chức Năng Nổi Bật</span>
+      </h2>
+      <p class="sub anim delay-2">Kết nối người dùng online - offline và công cụ điều hành kinh doanh số</p>
+
+      <div class="body anim delay-3">
+        <div class="item">
+          <figure class="shot" data-label="Vòng quay may mắn" onclick="zoomImage(this)">
+            <div class="zoom-btn">🔍</div>
+            <img src="images/lucky-wheel.png" alt="Vòng quay"
+              onerror="handleImgError(this, '🎡', 'Vòng Quay May Mắn (Lucky Wheel)', 'images/lucky-wheel.png')">
+          </figure>
+          <div class="cap">
+            🎡 Vòng Quay May Mắn
+            <span>Tặng mã giảm giá trực tiếp · Confetti</span>
+          </div>
+        </div>
+
+        <div class="item">
+          <figure class="shot" data-label="Bản đồ Showroom" onclick="zoomImage(this)">
+            <div class="zoom-btn">🔍</div>
+            <img src="images/showroom-map.png" alt="Bản đồ"
+              onerror="handleImgError(this, '🗺️', 'Bản Đồ Chuỗi Showroom', 'images/showroom-map.png')">
+          </figure>
+          <div class="cap">
+            🗺 Chuỗi Showroom &amp; Bản Đồ
+            <span>React Leaflet GPS · Định vị chỉ đường</span>
+          </div>
+        </div>
+
+        <div class="item">
+          <figure class="shot" data-label="Xác thực OTP Email" onclick="zoomImage(this)">
+            <div class="zoom-btn">🔍</div>
+            <img src="images/otp.png" alt="Xác thực OTP"
+              onerror="handleImgError(this, '🔐', 'Đăng Ký Xác Thực OTP Email', 'images/otp.png')">
+          </figure>
+          <div class="cap">
+            🔐 Email OTP &amp; JWT
+            <span>Xác thực 6 số an toàn · BCrypt</span>
+          </div>
+        </div>
+
+        <div class="item">
+          <figure class="shot" data-label="Dashboard Doanh Thu Recharts" onclick="zoomImage(this)">
+            <div class="zoom-btn">🔍</div>
+            <img src="images/dashboard.png" alt="Dashboard"
+              onerror="handleImgError(this, '📊', 'Dashboard Recharts', 'images/dashboard.png')">
+          </figure>
+          <div class="cap">
+            📊 Dashboard &amp; Xuất Excel
+            <span>Theo dõi doanh thu thời gian thực</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 5. KẾT QUẢ THỰC HIỆN (SPRINT & TRELLO) ==================== -->
+    <section class="slide" data-title="5. Kết Quả Thực Hiện (Tiến Độ & Nghiệm Thu)" data-zoom-steps="true">
+      <h2 class="anim delay-1">
+        <span class="grad">5. Kết Quả Thực Hiện</span> – Tiến Độ Sprint &amp; Nghiệm Thu Trello
+      </h2>
+      <p class="sub anim delay-2">Khối lượng công việc qua 3 Sprint đúng thời hạn theo phương pháp luận Scrum</p>
+
+      <div class="body anim delay-3">
+        <!-- Cột trái: 3 Sprints -->
+        <div class="col" style="flex: 1.4;">
+          <div class="sprints-grid">
+            <div class="card sprint-card">
+              <div class="sprint-badge"><span class="sprint-n">Sprint 1</span><span class="sprint-date">26-30/10</span>
+              </div>
+              <div>
+                <div class="sprint-stat grad" style="font-size: 52px;">21</div><span class="sprint-label">Task</span>
+              </div>
+              <div class="sprint-theme" style="font-size: 13px;">CSDL, Auth JWT, Danh mục, Docker</div>
+            </div>
+            <div class="card sprint-card">
+              <div class="sprint-badge"><span class="sprint-n">Sprint 2</span><span class="sprint-date">02-06/11</span>
+              </div>
+              <div>
+                <div class="sprint-stat grad-ai" style="font-size: 52px;">28</div><span class="sprint-label">Task</span>
+              </div>
+              <div class="sprint-theme" style="font-size: 13px;">Giỏ hàng, COD, AI Chatbot, Admin</div>
+            </div>
+            <div class="card sprint-card">
+              <div class="sprint-badge"><span class="sprint-n">Sprint 3</span><span class="sprint-date">09-13/11</span>
+              </div>
+              <div>
+                <div class="sprint-stat grad-green" style="font-size: 52px;">22</div><span
+                  class="sprint-label">Task</span>
+              </div>
+              <div class="sprint-theme" style="font-size: 13px;">Visual Search, Excel/PDF, CI/CD Deploy</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cột phải: Minh chứng Trello -->
+        <div class="item" style="flex: 1;">
+          <figure class="shot" data-label="Bảng Trello Kanban thực tế 71 tasks done" onclick="zoomImage(this)">
+            <div class="zoom-btn">🔍</div>
+            <img src="images/trello.png" alt="Trello"
+              onerror="handleImgError(this, '📋', 'Bảng Trello Kanban', 'images/trello.png')">
+          </figure>
+          <div class="cap" style="text-align: center;">
+            📋 Minh Chứng Bảng Trello Kanban
+            <span>71/71 task chuyển sang cột Done hoàn tất</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 6. DEMO & Q&A ==================== -->
+    <section class="slide cover-end" data-title="6. Demo & Q&A">
+      <div class="tag-badge anim delay-1" style="margin-top: 6px;">
+        <span>🏆</span> Nghiệm Thu Đồ Án
+      </div>
+
+      <div class="kpi-circle grad anim delay-2">
+        71 / 71
+      </div>
+
+      <p class="sub anim delay-3" style="font-size: 24px; margin: 4px 0 18px; color: #cbd5e1;">
+        Hoàn thành <b>71/71 task</b> kế hoạch · Triển khai Production ổn định trên Cloud VPS
+      </p>
+
+      <div class="links-grid anim delay-4">
+        <a href="https://nexortech.io.vn" target="_blank" class="link-pill">
+          <span>🌐</span>
+          <span>Hệ thống trực tiếp: <b>nexortech.io.vn</b></span>
+        </a>
+        <a href="https://github.com/trithangggggggg/ecommerce-project-final" target="_blank" class="link-pill">
+          <span>💻</span>
+          <span>GitHub: <b>trithangggggggg/ecommerce...</b></span>
+        </a>
+      </div>
+
+      <h2 class="grad anim delay-5" style="margin-top: 28px; font-size: 38px;">
+        6. Demo Trực Tiếp Hệ Thống &amp; Hỏi Đáp (Q&amp;A)
+      </h2>
+    </section>
+
+  </div>
+
+  <!-- BOTTOM FLOATING CONTROLS (Tự động ẩn - Chỉ hiện khi di chuột) -->
+  <div id="ui-bar" title="Thanh điều khiển (Tự động ẩn)">
+    <button class="ui-btn" id="prev" title="Trang trước (← / Backspace)">◀</button>
+    <span id="count">1 / 14</span>
+    <button class="ui-btn" id="next" title="Trang tiếp theo (→ / Space)">▶</button>
+    <span class="ui-divider"></span>
+    <button class="ui-btn" id="fs" title="Toàn màn hình (F)">⛶</button>
+  </div>
+
+  <!-- SLIDE OVERVIEW MODAL -->
+  <div id="overview-modal">
+    <div class="overview-header">
+      <h2 style="font-size: 24px;"><span class="grad">Danh Sách Slide</span> (<span id="overview-total">14</span>
+        Slides)</h2>
+      <button class="ui-btn" id="close-overview" style="font-size: 18px;">✕ Đóng</button>
+    </div>
+    <div class="overview-grid" id="overview-grid"></div>
+  </div>
+
+  <!-- LIGHTBOX ZOOM MODAL -->
+  <div id="lightbox" onclick="closeLightbox(event)">
+    <button class="lb-close" onclick="closeLightbox(event)" title="Đóng zoom (Esc)">✕</button>
+    <button class="lb-nav lb-prev" onclick="handleLbPrev(event)" title="Trước (←)">◀</button>
+    <div class="lb-content" onclick="event.stopPropagation()">
+      <!-- Chế độ xem ảnh chụp màn hình -->
+      <div id="lb-image-mode">
+        <img id="lightbox-img" src="" alt="Zoom Image">
+      </div>
+
+      <!-- Chế độ giới thiệu thành viên VIP Spotlight -->
+      <div id="lb-member-mode" style="display: none;">
+        <div class="lb-member-card">
+          <div class="lb-member-avatar-wrap">
+            <img id="lb-member-avatar" src="" alt="Avatar">
+          </div>
+          <div class="lb-member-info">
+            <div class="lb-member-branch" id="lb-member-branch">🌿 Devops-Trithang</div>
+            <h2 class="lb-member-name" id="lb-member-name">Nguyễn Trí Thắng</h2>
+            <div class="lb-member-role" id="lb-member-role">Leader · DevOps · AI</div>
+            <div class="lb-member-tasks-title">Trách nhiệm &amp; Đóng góp chính:</div>
+            <div class="lb-member-tasks" id="lb-member-tasks"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="lightbox-caption">
+        <span class="lb-step-pill" id="lb-step">1 / 2</span>
+        <span id="lb-title">Giao diện Khách hàng (Storefront)</span>
+        <span class="lb-hint" id="lb-hint">Nhấn ▶ để xem ảnh tiếp theo · Esc để đóng</span>
+      </div>
+    </div>
+    <button class="lb-nav lb-next" onclick="handleLbNext(event)" title="Sau (→)">▶</button>
+  </div>
+
+  <!-- HELP SHORTCUTS MODAL -->
+  <div id="help-modal" onclick="closeHelp(event)">
+    <div class="help-card" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 18px;">
+        <h3 style="font-size: 20px;"><span class="grad">Phím Tắt Thuyết Trình</span></h3>
+        <button class="ui-btn" onclick="toggleHelp()">✕</button>
+      </div>
+      <div class="help-row"><span>Chuyển slide / Zoom ảnh tiếp</span><span class="kbd">→ / Space / Enter</span></div>
+      <div class="help-row"><span>Quay lại slide / Lùi ảnh zoom</span><span class="kbd">← / Backspace</span></div>
+      <div class="help-row"><span>Đóng phóng to ảnh (Zoom)</span><span class="kbd">Esc</span></div>
+      <div class="help-row"><span>Slide đầu tiên / Cuối cùng</span><span class="kbd">Home / End</span></div>
+      <div class="help-row"><span>Bật / Tắt Toàn màn hình</span><span class="kbd">F</span></div>
+      <div class="help-row"><span>Mở chế độ Tổng quan (Overview)</span><span class="kbd">O</span></div>
+      <div class="help-row"><span>Bắt đầu / Dừng đồng hồ</span><span class="kbd">T</span></div>
+      <div class="help-row"><span>Tạm ẩn màn hình (Blackout)</span><span class="kbd">B</span></div>
+      <div class="help-row"><span>Bật / Tắt bảng phím tắt này</span><span class="kbd">?</span></div>
+    </div>
+  </div>
+
+  <script>
+    /* ================= PARTICLE CANVAS BACKGROUND ================= */
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.8;
+        this.speedX = (Math.random() - 0.5) * 0.4;
+        this.speedY = (Math.random() - 0.5) * 0.4;
+        this.color = Math.random() > 0.5 ? 'rgba(0, 242, 254, ' : 'rgba(139, 92, 246, ';
+        this.alpha = Math.random() * 0.5 + 0.2;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0) this.x = canvas.width;
+        if (this.x > canvas.width) this.x = 0;
+        if (this.y < 0) this.y = canvas.height;
+        if (this.y > canvas.height) this.y = 0;
+      }
+      draw() {
+        ctx.fillStyle = this.color + this.alpha + ')';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 45; i++) {
+      particles.push(new Particle());
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 110) {
+            ctx.strokeStyle = `rgba(100, 140, 240, ${0.12 * (1 - dist / 110)})`;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    /* ================= SLIDE NAVIGATION & STAGE FIT ================= */
+    const slides = [...document.querySelectorAll('.slide')];
+    const stage = document.getElementById('stage');
+    const countEl = document.getElementById('count');
+    const barEl = document.getElementById('bar');
+    let curIdx = 0;
+    let zoomStep = 0; // 0 = slide overview; 1, 2, ... = step index of zoomed image
+
+    function showSlide(index) {
+      closeLightbox();
+      zoomStep = 0;
+      curIdx = Math.max(0, Math.min(slides.length - 1, index));
+      slides.forEach((s, idx) => {
+        s.classList.toggle('active', idx === curIdx);
+      });
+      countEl.textContent = `${curIdx + 1} / ${slides.length}`;
+      barEl.style.width = `${((curIdx + 1) / slides.length) * 100}%`;
+      history.replaceState(null, '', '#' + (curIdx + 1));
+    }
+
+    function fitStage() {
+      const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720) * 0.96;
+      stage.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    }
+    window.addEventListener('resize', fitStage);
+    fitStage();
+
+    /* ================= IMAGE & MEMBER LIGHTBOX ZOOM & STEPPING ================= */
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lbImageMode = document.getElementById('lb-image-mode');
+    const lbMemberMode = document.getElementById('lb-member-mode');
+    const lbStepEl = document.getElementById('lb-step');
+    const lbTitleEl = document.getElementById('lb-title');
+    const lbHintEl = document.getElementById('lb-hint');
+
+    function getSlideItems(slideIndex) {
+      const slide = slides[slideIndex];
+      if (!slide) return [];
+
+      // Slide 2: Member cards
+      const memberCards = [...slide.querySelectorAll('.member-card')];
+      if (memberCards.length > 0) {
+        return memberCards.map(card => {
+          const img = card.querySelector('img');
+          const name = card.querySelector('.member-name')?.textContent || '';
+          const role = card.querySelector('.member-role')?.textContent || '';
+          const branch = card.querySelector('.member-branch')?.textContent || '';
+          const tasks = card.querySelector('.member-tasks')?.innerHTML || '';
+          return {
+            type: 'member',
+            elem: card,
+            img: img,
+            name: name,
+            role: role,
+            branch: branch,
+            tasks: tasks,
+            label: name
+          };
+        });
+      }
+
+      // Other slides: Screenshots (.shot)
+      const shots = [...slide.querySelectorAll('.shot')].filter(shot => {
+        const img = shot.querySelector('img');
+        return img && img.src && !img.dataset.failed;
+      });
+      return shots.map(shot => {
+        const img = shot.querySelector('img');
+        return {
+          type: 'shot',
+          elem: shot,
+          img: img,
+          label: shot.getAttribute('data-label') || (img?.alt || 'Hình ảnh')
+        };
+      });
+    }
+
+    function isSlideZoomStepped(slide) {
+      if (!slide) return false;
+      return slide.getAttribute('data-zoom-steps') === 'true';
+    }
+
+    function renderZoomStep(items, step) {
+      if (!items || items.length === 0 || step < 1 || step > items.length) return;
+      const item = items[step - 1];
+
+      if (item.type === 'member') {
+        // Member mode
+        if (lbImageMode) lbImageMode.style.display = 'none';
+        if (lbMemberMode) lbMemberMode.style.display = 'block';
+
+        const avatar = document.getElementById('lb-member-avatar');
+        if (avatar && item.img) {
+          avatar.src = item.img.src;
+          avatar.style.objectPosition = item.img.style.objectPosition || 'center center';
+        }
+        const memName = document.getElementById('lb-member-name');
+        if (memName) memName.textContent = item.name;
+        const memRole = document.getElementById('lb-member-role');
+        if (memRole) memRole.textContent = item.role;
+        const memBranch = document.getElementById('lb-member-branch');
+        if (memBranch) memBranch.textContent = '🌿 ' + item.branch;
+        const memTasks = document.getElementById('lb-member-tasks');
+        if (memTasks) memTasks.innerHTML = item.tasks;
+
+        // Highlight card on Slide 2
+        const currentSlide = slides[curIdx];
+        if (currentSlide) {
+          currentSlide.querySelectorAll('.member-card').forEach((c, idx) => {
+            c.classList.toggle('focused', idx === step - 1);
+            c.classList.toggle('dimmed', idx !== step - 1);
+          });
+        }
+
+        if (lbStepEl) lbStepEl.textContent = `${step} / ${items.length}`;
+        if (lbTitleEl) lbTitleEl.textContent = `Thành viên Nhóm 03 · ${item.name}`;
+        if (lbHintEl) {
+          lbHintEl.textContent = step < items.length
+            ? 'Nhấn ▶ để giới thiệu bạn tiếp theo · Esc để đóng'
+            : 'Nhấn ▶ để sang Mục Nội Dung · Esc để đóng';
+        }
+      } else {
+        // Shot image mode
+        if (lbMemberMode) lbMemberMode.style.display = 'none';
+        if (lbImageMode) lbImageMode.style.display = 'block';
+
+        if (item.img) {
+          lightboxImg.src = item.img.src;
+          lightboxImg.style.animation = 'none';
+          void lightboxImg.offsetHeight;
+          lightboxImg.style.animation = 'lbZoomIn 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+        }
+
+        if (lbStepEl) lbStepEl.textContent = `${step} / ${items.length}`;
+        if (lbTitleEl) lbTitleEl.textContent = item.label;
+        if (lbHintEl) {
+          lbHintEl.textContent = step < items.length
+            ? 'Nhấn ▶ để xem ảnh tiếp theo · Esc để đóng'
+            : 'Nhấn ▶ để sang Slide tiếp theo · Esc để đóng';
+        }
+      }
+
+      lightbox.classList.add('open');
+    }
+
+    function zoomMember(cardElem) {
+      const items = getSlideItems(curIdx);
+      const idx = items.findIndex(item => item.elem === cardElem);
+      if (idx !== -1) {
+        zoomStep = idx + 1;
+        renderZoomStep(items, zoomStep);
+      }
+    }
+
+    function zoomImage(shotElem) {
+      const items = getSlideItems(curIdx);
+      const idx = items.findIndex(item => item.elem === shotElem);
+      if (idx !== -1) {
+        zoomStep = idx + 1;
+        renderZoomStep(items, zoomStep);
+      } else {
+        const img = shotElem.querySelector('img');
+        if (img && img.src && !img.dataset.failed) {
+          if (lbMemberMode) lbMemberMode.style.display = 'none';
+          if (lbImageMode) lbImageMode.style.display = 'block';
+          lightboxImg.src = img.src;
+          if (lbTitleEl) lbTitleEl.textContent = shotElem.getAttribute('data-label') || '';
+          if (lbStepEl) lbStepEl.textContent = '1 / 1';
+          if (lbHintEl) lbHintEl.textContent = 'Esc để đóng';
+          lightbox.classList.add('open');
+        }
+      }
+    }
+
+    function closeLightbox(e) {
+      if (e && e.target && e.target.closest && e.target.closest('.lb-content')) return;
+      lightbox.classList.remove('open');
+      zoomStep = 0;
+      const currentSlide = slides[curIdx];
+      if (currentSlide) {
+        currentSlide.querySelectorAll('.member-card').forEach(c => {
+          c.classList.remove('focused', 'dimmed');
+        });
+      }
+    }
+
+    function handleNext() {
+      const currentSlide = slides[curIdx];
+      const items = getSlideItems(curIdx);
+      const isLbOpen = lightbox.classList.contains('open');
+      const isStepped = isSlideZoomStepped(currentSlide);
+
+      // If lightbox is currently open
+      if (isLbOpen) {
+        if (items.length > 0 && zoomStep < items.length) {
+          zoomStep++;
+          renderZoomStep(items, zoomStep);
+          return;
+        } else {
+          // Completed all zoomed items in this slide -> close and advance to next slide
+          closeLightbox();
+          showSlide(curIdx + 1);
+          return;
+        }
+      }
+
+      // If this slide has zoom stepping configured (Slide 2, 5, 10, 11, 12, 13)
+      if (isStepped && items.length > 0) {
+        if (zoomStep < items.length) {
+          zoomStep = 1;
+          renderZoomStep(items, zoomStep);
+          return;
+        }
+      }
+
+      // Normal advance
+      showSlide(curIdx + 1);
+    }
+
+    function handlePrev() {
+      const items = getSlideItems(curIdx);
+      const isLbOpen = lightbox.classList.contains('open');
+
+      // If lightbox is currently open
+      if (isLbOpen) {
+        if (zoomStep > 1) {
+          zoomStep--;
+          renderZoomStep(items, zoomStep);
+          return;
+        } else {
+          // Return to slide overview
+          closeLightbox();
+          return;
+        }
+      }
+
+      // Normal retreat
+      showSlide(curIdx - 1);
+    }
+
+    function handleLbNext(e) {
+      if (e) e.stopPropagation();
+      handleNext();
+    }
+
+    function handleLbPrev(e) {
+      if (e) e.stopPropagation();
+      handlePrev();
+    }
+
+    /* Keyboard Controls */
+    window.addEventListener('keydown', e => {
+      if (['ArrowRight', 'PageDown', ' '].includes(e.key) || e.key === 'Enter') {
+        e.preventDefault();
+        handleNext();
+      } else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) {
+        e.preventDefault();
+        handlePrev();
+      } else if (e.key === 'Home') {
+        showSlide(0);
+      } else if (e.key === 'End') {
+        showSlide(slides.length - 1);
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFS();
+      } else if (e.key === 'o' || e.key === 'O') {
+        toggleOverview();
+      } else if (e.key === 't' || e.key === 'T') {
+        toggleTimer();
+      } else if (e.key === 'b' || e.key === 'B') {
+        toggleBlackout();
+      } else if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+        toggleHelp();
+      } else if (e.key === 'Escape') {
+        closeLightbox();
+        closeOverview();
+        closeHelp();
+      }
+    });
+
+    /* Touch Swipe Navigation */
+    let touchStartX = null;
+    window.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+    window.addEventListener('touchend', e => {
+      if (touchStartX === null) return;
+      const diff = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(diff) > 40) {
+        if (diff < 0) {
+          handleNext();
+        } else {
+          handlePrev();
+        }
+      }
+      touchStartX = null;
+    });
+
+    /* Buttons */
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    const fsBtn = document.getElementById('fs');
+    if (prevBtn) prevBtn.onclick = handlePrev;
+    if (nextBtn) nextBtn.onclick = handleNext;
+    if (fsBtn) fsBtn.onclick = toggleFS;
+
+    const overviewBtn = document.getElementById('overview-btn');
+    if (overviewBtn) overviewBtn.onclick = toggleOverview;
+    const closeOverviewBtn = document.getElementById('close-overview');
+    if (closeOverviewBtn) closeOverviewBtn.onclick = closeOverview;
+    const helpBtn = document.getElementById('help-btn');
+    if (helpBtn) helpBtn.onclick = toggleHelp;
+
+    /* ================= AUTO-HIDE UI CONTROLS ================= */
+    const uiBar = document.getElementById('ui-bar');
+    let hideUiTimer = null;
+
+    function revealUiBar() {
+      if (!uiBar) return;
+      uiBar.classList.add('visible');
+      clearTimeout(hideUiTimer);
+      hideUiTimer = setTimeout(() => {
+        uiBar.classList.remove('visible');
+      }, 2600);
+    }
+
+    window.addEventListener('mousemove', revealUiBar);
+    window.addEventListener('touchstart', revealUiBar);
+
+    if (uiBar) {
+      uiBar.addEventListener('mouseenter', () => {
+        clearTimeout(hideUiTimer);
+        uiBar.classList.add('visible');
+      });
+      uiBar.addEventListener('mouseleave', () => {
+        hideUiTimer = setTimeout(() => {
+          uiBar.classList.remove('visible');
+        }, 1200);
+      });
+    }
+
+    function toggleFS() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => { });
+      } else {
+        document.exitFullscreen().catch(() => { });
+      }
+    }
+
+    let isBlackout = false;
+    function toggleBlackout() {
+      isBlackout = !isBlackout;
+      stage.style.visibility = isBlackout ? 'hidden' : 'visible';
+    }
+
+    /* ================= PRESENTATION TIMER ================= */
+    let timerInterval = null;
+    let secondsElapsed = 0;
+    const timerEl = document.getElementById('timer');
+
+    function formatTime(s) {
+      const mins = Math.floor(s / 60);
+      const secs = s % 60;
+      return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
+    function toggleTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        if (timerEl) timerEl.style.opacity = '0.6';
+      } else {
+        if (timerEl) timerEl.style.opacity = '1';
+        timerInterval = setInterval(() => {
+          secondsElapsed++;
+          if (timerEl) timerEl.textContent = '⏱ ' + formatTime(secondsElapsed);
+        }, 1000);
+      }
+    }
+    if (timerEl) timerEl.onclick = toggleTimer;
+
+    /* ================= SLIDE OVERVIEW GRID ================= */
+    const overviewModal = document.getElementById('overview-modal');
+    const overviewGrid = document.getElementById('overview-grid');
+
+    function buildOverview() {
+      overviewGrid.innerHTML = '';
+      const totalEl = document.getElementById('overview-total');
+      if (totalEl) totalEl.textContent = slides.length;
+      slides.forEach((slide, idx) => {
+        const title = slide.getAttribute('data-title') || `Slide ${idx + 1}`;
+        const thumb = document.createElement('div');
+        thumb.className = `overview-thumb ${idx === curIdx ? 'current' : ''}`;
+        thumb.innerHTML = `
+      <div class="overview-thumb-num">SLIDE ${idx + 1 < 10 ? '0' : ''}${idx + 1}</div>
+      <div class="overview-thumb-title">${title}</div>
+    `;
+        thumb.onclick = () => {
+          showSlide(idx);
+          closeOverview();
+        };
+        overviewGrid.appendChild(thumb);
+      });
+    }
+
+    function toggleOverview() {
+      if (overviewModal.classList.contains('open')) {
+        closeOverview();
+      } else {
+        buildOverview();
+        overviewModal.classList.add('open');
+      }
+    }
+    function closeOverview() {
+      overviewModal.classList.remove('open');
+    }
+
+    /* ================= IMAGE & AVATAR FALLBACK HANDLERS ================= */
+    function handleImgError(img, icon, title, path) {
+      img.dataset.failed = "true";
+      img.style.display = 'none';
+      const parent = img.parentElement;
+
+      if (parent.querySelector('.shot-placeholder')) return;
+
+      const placeholder = document.createElement('div');
+      placeholder.className = 'shot-placeholder';
+      placeholder.innerHTML = `
+    <div class="shot-icon">${icon}</div>
+    <div class="shot-title">${title}</div>
+    <div class="shot-hint">📁 ${path}</div>
+  `;
+      parent.appendChild(placeholder);
+    }
+
+    function handleAvatarError(img, icon) {
+      img.style.display = 'none';
+      const parent = img.parentElement;
+      if (!parent.querySelector('.member-fallback')) {
+        const fallback = document.createElement('div');
+        fallback.className = 'member-fallback';
+        fallback.textContent = icon;
+        parent.appendChild(fallback);
+      }
+    }
+
+    /* ================= HELP MODAL ================= */
+    const helpModal = document.getElementById('help-modal');
+    function toggleHelp() {
+      helpModal.classList.toggle('open');
+    }
+    function closeHelp() {
+      helpModal.classList.remove('open');
+    }
+
+    /* Init first slide */
+    const initHash = parseInt(location.hash.slice(1));
+    showSlide(isNaN(initHash) ? 0 : initHash - 1);
+  </script>
+</body>
+
+</html>
