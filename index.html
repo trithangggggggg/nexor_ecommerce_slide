@@ -508,83 +508,184 @@
       line-height: 1.5;
     }
 
-    /* ================= MỤC 1: VẤN ĐỀ & GIẢI PHÁP ================= */
-    .pair-grid {
+    /* ================= MỤC 1: ĐẶT VẤN ĐỀ & MỤC TIÊU ================= */
+    .problem-solution-wrap {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: 24px;
       flex: 1;
+      min-height: 0;
     }
 
-    .problem-card {
+    .ps-column {
+      background: rgba(16, 24, 48, 0.65);
+      border-radius: 16px;
+      padding: 22px 24px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 16px 20px;
-      border-left: 4px solid var(--rose);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      transition: all 0.3s ease;
     }
 
-    .problem-header {
+    .ps-column.ps-problem {
+      border-top: 3px solid var(--rose);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(244, 63, 94, 0.2);
+    }
+
+    .ps-column.ps-solution {
+      border-top: 3px solid var(--cyan);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(0, 242, 254, 0.2);
+    }
+
+    .ps-header {
       display: flex;
-      align-items: center;
-      gap: 12px;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    .problem-header .ic {
-      font-size: 26px;
-      padding: 8px;
-      border-radius: 10px;
-      background: rgba(244, 63, 94, 0.12);
-      border: 1px solid rgba(244, 63, 94, 0.25);
-    }
-
-    .problem-header b {
-      font-size: 17px;
-      font-weight: 700;
-      color: #ffcad4;
-    }
-
-    .problem-arrow {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      font-weight: 600;
-    }
-
-    .problem-arrow::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: var(--line);
-    }
-
-    .solution-box {
-      display: flex;
+    .ps-badge {
+      display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 9px 12px;
-      border-radius: 8px;
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-
-    .solution-box .check-ic {
-      color: var(--emerald);
-      font-size: 17px;
+      font-size: 13.5px;
       font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: var(--font-display);
     }
 
-    .solution-box em {
-      font-style: normal;
-      color: #a7f3d0;
-      font-weight: 700;
-      font-size: 15px;
+    .ps-problem .ps-badge {
+      color: #fda4af;
     }
+
+    .ps-solution .ps-badge {
+      color: var(--cyan);
+    }
+
+    .ps-badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .ps-problem .ps-badge-dot {
+      background: var(--rose);
+      box-shadow: 0 0 8px var(--rose);
+    }
+
+    .ps-solution .ps-badge-dot {
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+    }
+
+    .ps-subtitle {
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+
+    .ps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+      justify-content: space-around;
+    }
+
+    .ps-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: rgba(12, 18, 36, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      transition: background 0.2s, transform 0.2s, border-color 0.2s;
+    }
+
+    .ps-item:hover {
+      background: rgba(22, 34, 68, 0.7);
+      transform: translateX(3px);
+    }
+
+    .ps-problem .ps-item:hover {
+      border-color: rgba(244, 63, 94, 0.3);
+    }
+
+    .ps-solution .ps-item:hover {
+      border-color: rgba(0, 242, 254, 0.3);
+    }
+
+    .ps-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .ps-problem .ps-num {
+      background: rgba(244, 63, 94, 0.15);
+      color: #fda4af;
+      border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+
+    .ps-solution .ps-num {
+      background: rgba(0, 242, 254, 0.15);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+    }
+
+    .ps-content {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .ps-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.35;
+    }
+
+    .ps-problem .ps-item:hover .ps-title {
+      color: #fecdd3;
+    }
+
+    .ps-solution .ps-item:hover .ps-title {
+      color: #e0f2fe;
+    }
+
+    .ps-desc {
+      font-size: 12.5px;
+      color: var(--text-sub);
+      line-height: 1.45;
+    }
+
+    .ps-desc code {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      background: rgba(0, 242, 254, 0.1);
+      color: var(--cyan);
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 242, 254, 0.2);
+    }
+
+
 
     /* Danh sách gạch đầu dòng */
     .list {
@@ -1639,71 +1740,96 @@
       <h2 class="anim delay-1">
         <span class="grad">1. Đặt Vấn Đề &amp; Mục Tiêu</span>
       </h2>
-      <p class="sub anim delay-2">Khảo sát rào cản thực tế trong thương mại điện tử công nghệ và mục tiêu xây dựng hệ
-        thống NEXOR</p>
+      <p class="sub anim delay-2">Khảo sát rào cản thực tế trong thương mại điện tử công nghệ và mục tiêu xây dựng hệ thống NEXOR</p>
 
-      <div class="pair-grid anim delay-3">
-        <div class="card problem-card">
-          <div class="problem-header">
-            <span class="ic">🧩</span>
-            <div>
-              <b>Thông số kỹ thuật phức tạp</b>
-              <p style="font-size: 13px; color: var(--text-sub); margin-top: 2px;">Khách hàng khó tự đối chiếu chip,
-                RAM, card đồ họa</p>
-            </div>
+      <div class="problem-solution-wrap anim delay-3">
+        <!-- Cột 1: Thực trạng & Thách thức -->
+        <div class="ps-column ps-problem">
+          <div class="ps-header">
+            <span class="ps-badge">
+              <span class="ps-badge-dot"></span>
+              Thực Trạng &amp; Thách Thức
+            </span>
+            <span class="ps-subtitle">Rào cản thực tế từ người dùng &amp; vận hành thương mại điện tử</span>
           </div>
-          <div class="problem-arrow">Giải pháp Nexor</div>
-          <div class="solution-box">
-            <span class="check-ic">✓</span>
-            <em>Trợ lý AI Chatbot RAG 24/7 (tư vấn &amp; so sánh tức thì)</em>
+
+          <div class="ps-list">
+            <div class="ps-item">
+              <div class="ps-num">01</div>
+              <div class="ps-content">
+                <div class="ps-title">Thông số kỹ thuật phức tạp</div>
+                <div class="ps-desc">Khách hàng khó khăn khi tự so sánh các thông số CPU, RAM, GPU hoặc tìm cấu hình máy tối ưu cho nhu cầu.</div>
+              </div>
+            </div>
+
+            <div class="ps-item">
+              <div class="ps-num">02</div>
+              <div class="ps-content">
+                <div class="ps-title">Tìm kiếm bằng từ khóa hạn chế</div>
+                <div class="ps-desc">Khó tìm đúng thiết bị mong muốn khi người dùng chỉ có ảnh chụp thực tế hoặc không nhớ chính xác tên model.</div>
+              </div>
+            </div>
+
+            <div class="ps-item">
+              <div class="ps-num">03</div>
+              <div class="ps-content">
+                <div class="ps-title">Nguy cơ bán vượt tồn kho (Overselling)</div>
+                <div class="ps-desc">Dễ phát sinh xung đột dữ liệu và sai lệch tồn kho khi nhiều khách hàng cùng thanh toán đồng thời trong đợt Flash Sale.</div>
+              </div>
+            </div>
+
+            <div class="ps-item">
+              <div class="ps-num">04</div>
+              <div class="ps-content">
+                <div class="ps-title">Vận hành quản trị thủ công quá tải</div>
+                <div class="ps-desc">Tốn nhiều thời gian và nhân lực cho việc viết bài mô tả sản phẩm, tối ưu SEO và đối soát hóa đơn định kỳ.</div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="card problem-card">
-          <div class="problem-header">
-            <span class="ic">📸</span>
-            <div>
-              <b>Tìm kiếm từ khóa hạn chế</b>
-              <p style="font-size: 13px; color: var(--text-sub); margin-top: 2px;">Người dùng chỉ có ảnh mẫu, không biết
-                tên thiết bị</p>
-            </div>
+        <!-- Cột 2: Mục tiêu & Giải pháp NEXOR -->
+        <div class="ps-column ps-solution">
+          <div class="ps-header">
+            <span class="ps-badge">
+              <span class="ps-badge-dot"></span>
+              Mục Tiêu &amp; Giải Pháp NEXOR
+            </span>
+            <span class="ps-subtitle">Hệ sinh thái E-Commerce ứng dụng AI thông minh &amp; dữ liệu nhất quán</span>
           </div>
-          <div class="problem-arrow">Giải pháp Nexor</div>
-          <div class="solution-box">
-            <span class="check-ic">✓</span>
-            <em>Visual Search – Tìm sản phẩm qua ảnh bằng Gemini Vision</em>
-          </div>
-        </div>
 
-        <div class="card problem-card">
-          <div class="problem-header">
-            <span class="ic">⚙️</span>
-            <div>
-              <b>Vận hành thủ công quá tải</b>
-              <p style="font-size: 13px; color: var(--text-sub); margin-top: 2px;">Viết bài SEO sản phẩm lâu, đối soát
-                hóa đơn chậm</p>
+          <div class="ps-list">
+            <div class="ps-item">
+              <div class="ps-num">01</div>
+              <div class="ps-content">
+                <div class="ps-title">Trợ lý AI tư vấn thông minh 24/7</div>
+                <div class="ps-desc">Tích hợp Chatbot AI giải đáp chi tiết thông số, so sánh cấu hình và đề xuất sản phẩm phù hợp ngân sách.</div>
+              </div>
             </div>
-          </div>
-          <div class="problem-arrow">Giải pháp Nexor</div>
-          <div class="solution-box">
-            <span class="check-ic">✓</span>
-            <em>AI tự sinh nội dung SEO · Xuất hóa đơn Excel/PDF chuẩn</em>
-          </div>
-        </div>
 
-        <div class="card problem-card">
-          <div class="problem-header">
-            <span class="ic">📦</span>
-            <div>
-              <b>Rủi ro bán vượt tồn kho (Overselling)</b>
-              <p style="font-size: 13px; color: var(--text-sub); margin-top: 2px;">Xung đột dữ liệu Flash Sale nhiều
-                người mua cùng giây</p>
+            <div class="ps-item">
+              <div class="ps-num">02</div>
+              <div class="ps-content">
+                <div class="ps-title">Tìm kiếm bằng hình ảnh (Visual Search)</div>
+                <div class="ps-desc">Ứng dụng Gemini Vision nhận diện tức thì mẫu thiết bị từ ảnh chụp thực tế và tự động đối chiếu kho hàng.</div>
+              </div>
             </div>
-          </div>
-          <div class="problem-arrow">Giải pháp Nexor</div>
-          <div class="solution-box">
-            <span class="check-ic">✓</span>
-            <em>Giao dịch Transactional cô lập, kiểm tra tồn kho theo thời gian thực</em>
+
+            <div class="ps-item">
+              <div class="ps-num">03</div>
+              <div class="ps-content">
+                <div class="ps-title">Kiểm soát giao dịch thời gian thực</div>
+                <div class="ps-desc">Áp dụng cơ chế giao dịch <code>@Transactional</code> cô lập, đồng bộ số lượng tồn kho chính xác theo thời gian thực.</div>
+              </div>
+            </div>
+
+            <div class="ps-item">
+              <div class="ps-num">04</div>
+              <div class="ps-content">
+                <div class="ps-title">Tự động hóa vận hành quản trị</div>
+                <div class="ps-desc">Hỗ trợ tự sinh nội dung mô tả sản phẩm chuẩn SEO; tự động xuất báo cáo doanh thu và hóa đơn chuẩn PDF/Excel.</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1898,14 +2024,17 @@
         <!-- Cột trái: Sơ đồ ERD thực tế -->
         <div class="item" style="flex: 1.35; min-width: 0;">
           <figure class="shot" data-label="Sơ đồ quan hệ thực thể ERD (20+ bảng quan hệ)" onclick="zoomImage(this)">
-            <div class="zoom-btn">🔍</div>
-            <img src="images/erd.png" alt="Sơ đồ ERD"
-              onerror="handleImgError(this, '🗄️', 'Sơ đồ thực thể ERD', 'images/erd.png')">
-          </figure>
-          <div class="cap">
-            🗄️ Sơ Đồ Thực Thể ERD (20+ Tables)
-            <span>Chuẩn hóa quan hệ B2C Storefront, Biến thể SKU, RAG Vector &amp; Đơn hàng</span>
-          </div>
+            <figure class="shot" data-label="Sơ đồ quan hệ thực thể CSDL (ERD)" onclick="zoomImage(this)">
+              <div class="zoom-btn">🔍</div>
+              <img src="images/erd.png" alt="Sơ đồ ERD"
+                onerror="handleImgError(this, '🗄️', 'Sơ đồ thực thể ERD', 'images/erd.png')">
+            </figure>
+            <div class="cap">
+              🗄️ Sơ Đồ Thực Thể ERD (20+ Tables)
+              <span>Chuẩn hóa quan hệ B2C Storefront, Biến thể SKU, RAG Vector &amp; Đơn hàng</span>
+              🗄️ Cấu Trúc Bảng Quan Hệ (ERD Schema)
+              <span>Chuẩn hóa quan hệ Sản phẩm, Biến thể SKU, Đơn hàng, Khuyến mãi &amp; Khách hàng</span>
+            </div>
         </div>
 
         <!-- Cột phải: Chiến lược tối ưu hóa hệ thống -->
@@ -1959,7 +2088,7 @@
     <!-- ==================== 5. CHỨC NĂNG NỔI BẬT (AI) ==================== -->
     <section class="slide" data-title="5. Chức Năng Nổi Bật (AI)" data-zoom-steps="true">
       <h2 class="anim delay-1">
-        <span class="grad">5. Chức Năng Nổi Bật</span> – Trí Tuệ Nhân Tạo (Gemini AI)
+        <span class="grad">5. Chức Năng Nổi Bật</span> Trí Tuệ Nhân Tạo
       </h2>
       <p class="sub anim delay-2">Ứng dụng AI đa phương thức: tư vấn thông minh 24/7, tìm kiếm bằng hình ảnh và linh vật
         tương tác</p>
@@ -2007,7 +2136,7 @@
     <!-- ==================== 5. CHỨC NĂNG NỔI BẬT (STOREFRONT MUA SẮM) ==================== -->
     <section class="slide" data-title="5. Chức Năng Nổi Bật (Storefront)" data-zoom-steps="true">
       <h2 class="anim delay-1">
-        <span class="grad">5. Chức Năng Nổi Bật</span> – Trải Nghiệm Mua Sắm (Storefront)
+        <span class="grad">5. Chức Năng Nổi Bật</span> Trải Nghiệm Mua Sắm
       </h2>
       <p class="sub anim delay-2">Từ khám phá Flash Sale, bộ lọc đa chiều đến tùy chọn biến thể và giỏ hàng COD</p>
 
@@ -2042,7 +2171,7 @@
             <img src="images/gio-hang.png" alt="Giỏ hàng"
               onerror="handleImgError(this, '🛒', 'Giỏ hàng & Checkout COD', 'images/gio-hang.png')">
           </figure>
-          <div class="cap">🛒 Giỏ Hàng &amp; COD<span>Áp Voucher, trừ tồn kho an toàn</span></div>
+          <div class="cap">🛒 Giỏ Hàng &amp; Thanh toán Online<span>Áp Voucher, trừ tồn kho an toàn</span></div>
         </div>
       </div>
     </section>
@@ -2052,7 +2181,7 @@
       <h2 class="anim delay-1">
         <span class="grad">5. Chức Năng Nổi Bật</span>
       </h2>
-      <p class="sub anim delay-2">Kết nối người dùng online - offline và công cụ điều hành kinh doanh số</p>
+      <p class="sub anim delay-2">Trải nghệm người dùng và công cụ điều hành kinh doanh số</p>
 
       <div class="body anim delay-3">
         <div class="item">
